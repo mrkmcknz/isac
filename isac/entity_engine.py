@@ -34,7 +34,7 @@ class Entity(object):
         # Change to RF classifier or something PLEASE
         most_common_pos = most_common(pos_tokens)
 
-        for pos in self.tokenizer.tagger(data['text']):
+        for pos in self.tokenizer.tagger(utterance):
             if pos[1] == most_common_pos:
                 return pos[0]
 
