@@ -55,15 +55,15 @@ class Engine(object):
             if entity_type not in self.nn_training:
                 self.nn_training.append(entity_type)
 
-    def pos_training(self, training):
+    def pos_training(self, data):
 
-        for tag in training['tags']:
+        for tag in data['tags']:
 
-            for pos in self.tokenizer.tagger(training['text']):
+            for pos in self.tokenizer.tagger(data['text']):
                 if pos[0] == tag['value']:
                     tag['pos'] = pos[1]
 
-        return training
+        return data
 
     def register_training(self, data):
 
