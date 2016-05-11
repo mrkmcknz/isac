@@ -10,7 +10,7 @@ from isac.utils.nlp.trie import Trie
 
 class Engine(object):
 
-    def __init__(self, tokenizer=None, trie=None, training=None):
+    def __init__(self, training, tokenizer=None, trie=None):
         self.tokenizer = tokenizer or Tokenizer()
         self.trie = trie or Trie()
         self.training = training
