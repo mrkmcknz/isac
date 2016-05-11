@@ -3,13 +3,14 @@ from isac.utils.common.intent_helpers import find_first_tag, resolve_one_of
 
 class Intent(object):
 
-    def __init__(self, name, requires, at_least_one, optional):
+    def __init__(self, name, requires, at_least_one, optional, tagger):
         self.name = name
         self.requires = requires
         self.at_least_one = at_least_one
         self.optional = optional
+        self.tagger = tagger
 
-    def validate(self, tags, confidence):
+    def validate(self, utterance, tags, confidence):
 
         result = {'intent_type': self.name}
         intent_confidence = 0.0
@@ -20,8 +21,15 @@ class Intent(object):
                 local_tags, require_type)
 
             if not required_tag:
-                result['confidence'] = 0.0
-                return result
+                _attr_match = (
+                    self.tagger.unknown_entities(attr_name, utterance))
+
+                if _attr_match:
+                    canonical_form = _attr_match
+                    local_tags.append(None)
+                else:
+                    result['confidence'] = 0.0
+                    return result
 
             result[attr_name] = canonical_form
             local_tags.remove(required_tag)
@@ -49,11 +57,12 @@ class Intent(object):
 
 class IntentBuilder(object):
 
-    def __init__(self, name):
+    def __init__(self, name, tagger=None):
         self.at_least_one = []
         self.requires = []
         self.optional = []
         self.name = name
+        self.tagger = tagger
 
     def one_of(self, *args):
 
@@ -77,4 +86,6 @@ class IntentBuilder(object):
     def build(self):
 
         return Intent(
-            self.name, self.requires, self.at_least_one, self.optional)
+            self.name, self.requires, self.at_least_one, self.optional,
+            self.tagger
+            )
