@@ -6,9 +6,9 @@ from isac.utils.common.helpers import most_common
 
 class Entity(object):
 
-    def __init__(self, trie, tokenizer, training, max_tokens=20):
+    def __init__(self, trie, tokenizer, training_data, max_tokens=20):
         self.trie = trie
-        self.training = training
+        self.training_data = training_data
         self.tokenizer = tokenizer
         self.max_tokens = max_tokens
 
@@ -28,8 +28,10 @@ class Entity(object):
     def unknown_entities(self, attr, utterance):
 
         pos_tokens = []
-        for _t in self.training:
-            pos_tokens += [t['pos'] for t in _t['tags'] if t['key'] == attr]
+        for intent in self.training_data:
+            for _t in intent:
+                pos_tokens += [t['pos'] for t in _t['tags']
+                               if t['key'] == attr]
 
         # Change to RF classifier or something PLEASE
         most_common_pos = most_common(pos_tokens)

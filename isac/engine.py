@@ -1,6 +1,7 @@
 import re
 import heapq
 
+from isac.training_engine import Trainer
 from isac.entity_engine import Entity
 from isac.intent_engine import IntentBuilder
 from isac.parser_engine import Parser
@@ -10,12 +11,14 @@ from isac.utils.nlp.trie import Trie
 
 class Engine(object):
 
-    def __init__(self, training, tokenizer=None, trie=None):
+    def __init__(self, training_data=None, tokenizer=None, trie=None):
         self.tokenizer = tokenizer or Tokenizer()
         self.trie = trie or Trie()
-        self.training = training
-        self.tagger = Entity(self.trie, self.tokenizer, self.training)
+        self.training_data = training_data
+        self.tagger = Entity(self.trie, self.tokenizer, self.training_data)
         self.intent_parsers = []
+        if training_data:
+            Trainer(self).build()
 
     def _max_intent(self, parse_result, utterance):
 
@@ -55,21 +58,6 @@ class Engine(object):
 
             if entity_type not in self.nn_training:
                 self.nn_training.append(entity_type)
-
-    def pos_training(self, data):
-
-        for tag in data['tags']:
-
-            for pos in self.tokenizer.tagger(data['text']):
-                if pos[0] == tag['value']:
-                    tag['pos'] = pos[1]
-
-        return data
-
-    def register_training(self, data):
-
-        for tag in data.get('tags'):
-            self.register_entity(tag['value'], tag['key'])
 
     def register_intent_parser(self, intent_parser):
 
