@@ -17,12 +17,13 @@ class Engine(object):
         self.tagger = Entity(self.trie, self.tokenizer, self.training)
         self.intent_parsers = []
 
-    def _max_intent(self, parse_result):
+    def _max_intent(self, parse_result, utterance):
 
         max_intent = None
         for intent in self.intent_parsers:
             i = intent.validate(
-                parse_result.get('tags'), parse_result.get('confidence'))
+                utterance, parse_result.get('tags'),
+                parse_result.get('confidence'))
             if not max_intent or (
                     i and i.get('confidence') > max_intent.get('confidence')):
                 max_intent = i
@@ -34,7 +35,7 @@ class Engine(object):
         parser = Parser(self.tokenizer, self.tagger)
 
         for result in parser.parse(utterance, N=results):
-            max_intent = self._max_intent(result)
+            max_intent = self._max_intent(result, utterance)
 
         if max_intent and max_intent.get('confidence', 0.0) > 0:
             yield max_intent
@@ -80,7 +81,7 @@ class Engine(object):
 
     def register_intent(self, name, required, optional=None):
 
-        _i = IntentBuilder(name)
+        _i = IntentBuilder(name, self.tagger)
 
         for _r in required:
             _i.require(_r)
