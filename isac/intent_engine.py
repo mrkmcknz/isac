@@ -42,7 +42,6 @@ class Intent(object):
 
         target_client, canonical_form = find_first_tag(local_tags, 'Client')
 
-        result['target'] = target_client.get('key') if target_client else None
         result['confidence'] = total_confidence
 
         return result
