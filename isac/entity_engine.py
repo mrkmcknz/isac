@@ -1,11 +1,14 @@
-from isac.utils.nlp.trie import Trie
 from six.moves import xrange
+
+from isac.utils.nlp.trie import Trie
+from isac.utils.common.helpers import most_common
 
 
 class Entity(object):
 
-    def __init__(self, trie, tokenizer, max_tokens=20):
+    def __init__(self, trie, tokenizer, training, max_tokens=20):
         self.trie = trie
+        self.training = training
         self.tokenizer = tokenizer
         self.max_tokens = max_tokens
 
@@ -21,6 +24,21 @@ class Entity(object):
             tag['start_token'], tag['end_token'], tag) for tag in tags]
         decorated.sort()
         return [tag for start_token, end_token, tag in decorated]
+
+    def unknown_entities(self, attr, utterance):
+
+        pos_tokens = []
+        for _t in self.training:
+            pos_tokens += [t['pos'] for t in _t['tags'] if t['key'] == attr]
+
+        # Change to RF classifier or something PLEASE
+        most_common_pos = most_common(pos_tokens)
+
+        for pos in self.tokenizer.tagger(data['text']):
+            if pos[1] == most_common_pos:
+                return pos[0]
+
+        return None
 
     def tag(self, utterance):
 
