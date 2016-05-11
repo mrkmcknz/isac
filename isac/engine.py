@@ -13,8 +13,8 @@ class Engine(object):
     def __init__(self, tokenizer=None, trie=None, training=None):
         self.tokenizer = tokenizer or Tokenizer()
         self.trie = trie or Trie()
-        self.tagger = Entity(self.trie, self.tokenizer)
         self.training = training
+        self.tagger = Entity(self.trie, self.tokenizer, self.training)
         self.intent_parsers = []
 
     def _max_intent(self, parse_result):
