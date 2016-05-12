@@ -29,7 +29,7 @@ class Entity(object):
 
         pos_tokens = []
         for intent in self.training_data:
-            for _t in intent:
+            for _t in intent['training']:
                 pos_tokens += [t['pos'] for t in _t['tags']
                                if t['key'] == attr]
 
