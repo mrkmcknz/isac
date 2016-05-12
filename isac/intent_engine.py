@@ -1,3 +1,5 @@
+import math
+
 from isac.utils.common.intent_helpers import find_first_tag, resolve_one_of
 
 
@@ -46,7 +48,11 @@ class Intent(object):
             local_tags.remove(optional_tag)
             intent_confidence += 1.0
 
-        total_confidence = intent_confidence / len(tags) * confidence
+        if len(tags) * confidence == 0:
+            total_confidence = intent_confidence / (
+                math.pi ** (len(result) - 1))
+        else:
+            total_confidence = intent_confidence / len(tags) * confidence
 
         target_client, canonical_form = find_first_tag(local_tags, 'Client')
 
