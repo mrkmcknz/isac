@@ -7,7 +7,6 @@ class Trainer(object):
         self.training_data = engine.training_data
         self.engine = engine
         self.tokenizer = engine.tokenizer
-        self.tagger = engine.tagger
 
     def register_entities(self, intent):
 
